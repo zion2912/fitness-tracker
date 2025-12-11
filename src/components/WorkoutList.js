@@ -1,4 +1,10 @@
 import React from 'react';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from '../config/firebase-config';
+
+const q = query(collection(db, 'workouts'), orderBy('createdAt', 'desc'));
+const snap = await getDocs(q);
+const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
 function groupByDate(items) {
   return items.reduce((acc, it) => {
