@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../config/firebase-config';
 
 export default function InputWorkout({ onAdd }) {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [exercise, setExercise] = useState('');
   const [reps, setReps] = useState('');
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!exercise.trim() || !reps) return;
     const entry = {
@@ -15,6 +17,12 @@ export default function InputWorkout({ onAdd }) {
       reps: Number(reps),
     };
     onAdd(entry);
+    await addDoc(collection(db, 'workouts'), {
+      date: entry.date,
+      exercise: entry.exercise,
+      reps: entry.reps,
+      createdAt: serverTimestamp()
+    });
     setExercise('');
     setReps('');
   }
