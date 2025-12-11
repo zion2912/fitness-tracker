@@ -1,10 +1,6 @@
-import React from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
-
-const q = query(collection(db, 'workouts'), orderBy('createdAt', 'desc'));
-const snap = await getDocs(q);
-const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
 function groupByDate(items) {
   return items.reduce((acc, it) => {
@@ -14,9 +10,21 @@ function groupByDate(items) {
 }
 
 export default function WorkoutList({ workouts }) {
-  if (!workouts || workouts.length === 0) return <p>No workouts yet.</p>;
+  const [firestoreWorkouts, setFirestoreWorkouts] = useState([]);
 
-  const grouped = groupByDate(workouts);
+  useEffect(() => {
+    const q = query(collection(db, 'workouts'), orderBy('createdAt', 'desc'));
+    const unsub = onSnapshot(q, snapshot => {
+      const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      setFirestoreWorkouts(items);
+    });
+    return unsub;
+  }, []);
+
+  const allWorkouts = firestoreWorkouts.length > 0 ? firestoreWorkouts : workouts;
+  if (!allWorkouts || allWorkouts.length === 0) return <p>No workouts yet.</p>;
+
+  const grouped = groupByDate(allWorkouts);
   const dates = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
 
   return (
