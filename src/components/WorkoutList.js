@@ -8,7 +8,7 @@ function groupByDate(items) {
 }
 
 export default function WorkoutList({ workouts }) {
-  if (!workouts || workouts.length === 0) return <p>No workouts yet.</p>;
+  if (!workouts || workouts.length === 0) return <p>No workouts.</p>;
 
   const grouped = groupByDate(workouts);
   const dates = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
