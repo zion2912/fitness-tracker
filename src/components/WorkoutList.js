@@ -28,14 +28,17 @@ export default function WorkoutList({ workouts }) {
   const dates = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
 
   return (
-    <section>
+    <section className="panel history">
       <h2>Workout History</h2>
       {dates.map(date => (
-        <div key={date} style={{ marginBottom: 16 }}>
+        <div key={date} className="workout-date">
           <h3>{date}</h3>
-          <ul>
+          <ul className="workout-list">
             {grouped[date].map(w => (
-              <li key={w.id}>{w.exercise} — {w.reps} reps</li>
+              <li key={w.id} className="workout-item">
+                <span>{w.exercise}</span>
+                <span>{w.reps} reps</span>
+              </li>
             ))}
           </ul>
         </div>
