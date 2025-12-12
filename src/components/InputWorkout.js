@@ -28,29 +28,25 @@ export default function InputWorkout({ onAdd }) {
   }
 
   return (
-    <section>
+    <section className="panel">
       <h2>Add Workout</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
+      <form className="workout-form" onSubmit={handleSubmit}>
+        <div className="row">
           <label>
-            Date:{' '}
+            Date
             <input type="date" value={date} onChange={e => setDate(e.target.value)} />
           </label>
-        </div>
-        <div>
           <label>
-            Exercise:{' '}
-            <input value={exercise} onChange={e => setExercise(e.target.value)} placeholder="e.g. Push-ups" />
+            Exercise
+            <input type="text" value={exercise} onChange={e => setExercise(e.target.value)} placeholder="e.g. Push-ups" />
           </label>
-        </div>
-        <div>
           <label>
-            Reps:{' '}
+            Reps
             <input type="number" min="1" value={reps} onChange={e => setReps(e.target.value)} />
           </label>
         </div>
-        <div>
-          <button type="submit">Add</button>
+        <div style={{ textAlign: 'right' }}>
+          <button className="btn" type="submit" disabled={!exercise || !reps}>Add</button>
         </div>
       </form>
     </section>
