@@ -101,6 +101,28 @@ h2 {
   color: #0b1220;
 }
 
+.date-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  padding: 8px 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.date-header:hover { background: rgba(14,165,233,0.03); }
+
+.chevron {
+  transition: transform 160ms ease;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.chevron.open { transform: rotate(180deg); }
+
 @media (max-width: 600px) {
   .workout-form .row { flex-direction: column; align-items: stretch; }
 }
