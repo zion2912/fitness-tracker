@@ -32,7 +32,8 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <nav className="App-nav">
-          <Link to="/input">Add Workout</Link> |{' '}
+          <Link to="/input">Add Workout</Link>
+          <span className="nav-sep">|</span>
           <Link to="/history">History</Link>
         </nav>
         <main>
