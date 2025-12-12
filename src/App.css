@@ -16,7 +16,9 @@
   gap: 12px;
   align-items: center;
   justify-content: center;
-  margin-bottom: 18px;
+  width: 100%;
+  margin: 0 auto 18px auto;
+  padding: 0;
 }
 
 .App-nav a {
@@ -24,6 +26,8 @@
   color: #0f172a;
   padding: 8px 14px;
   border-radius: 8px;
+  flex: 1;
+  text-align: center;
 }
 
 .App-nav a:hover {
