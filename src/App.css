@@ -39,6 +39,8 @@
   border-radius: 12px;
   padding: 18px;
   box-shadow: 0 6px 18px rgba(9,30,66,0.08);
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 h2 {
@@ -120,6 +122,17 @@ h2 {
 
 .delete-btn:hover {
   background: #dc2626;
+}
+
+.no-workouts {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.no-workouts p {
+  margin: 8px 0;
 }
 
 .date-header {
