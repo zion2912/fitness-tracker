@@ -3,6 +3,7 @@
   min-height: 100vh;
   background: linear-gradient(180deg, #f7fafc 0%, #eef2f7 100%);
   color: #0f172a;
+  padding-top: 20px;
 }
 
 .container {
