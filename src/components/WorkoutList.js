@@ -23,7 +23,12 @@ export default function WorkoutList({ workouts }) {
   }, []);
 
   const allWorkouts = (firestoreWorkouts && firestoreWorkouts.length > 0) ? firestoreWorkouts : (workouts || []);
-  if (!allWorkouts || allWorkouts.length === 0) return <p>No workouts yet.</p>;
+  if (!allWorkouts || allWorkouts.length === 0) return (
+    <div className="no-workouts">
+      <p>No workouts yet.</p>
+      <p>Start by adding your first workout!</p>
+    </div>
+  );
 
   const grouped = groupByDate(allWorkouts);
   const dates = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));

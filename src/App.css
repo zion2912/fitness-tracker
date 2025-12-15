@@ -122,6 +122,17 @@ h2 {
   background: #dc2626;
 }
 
+.no-workouts {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.no-workouts p {
+  margin: 8px 0;
+}
+
 .date-header {
   width: 100%;
   display: flex;
