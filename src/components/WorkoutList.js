@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 
 function groupByDate(items) {
@@ -36,6 +36,14 @@ export default function WorkoutList({ workouts }) {
     });
   }
 
+  async function handleDelete(docId) {
+    try {
+      await deleteDoc(doc(db, 'workouts', docId));
+    } catch (error) {
+      console.error('Error deleting workout:', error);
+    }
+  }
+
   return (
     <section className="panel history">
       <h2>Workout History</h2>
@@ -56,7 +64,8 @@ export default function WorkoutList({ workouts }) {
                 {grouped[date].map(w => (
                   <li key={w.id} className="workout-item">
                     <span>{w.exercise}</span>
-                    <span>{w.reps} reps</span>
+                    <span>{w.reps} reps{w.weight ? ` @ ${w.weight} lbs` : ''}</span>
+                    <button className="delete-btn" onClick={() => handleDelete(w.id)} aria-label="Delete workout">×</button>
                   </li>
                 ))}
               </ul>

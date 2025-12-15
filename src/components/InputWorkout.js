@@ -6,6 +6,7 @@ export default function InputWorkout({ onAdd }) {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [exercise, setExercise] = useState('');
   const [reps, setReps] = useState('');
+  const [weight, setWeight] = useState('');
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -15,16 +16,19 @@ export default function InputWorkout({ onAdd }) {
       date,
       exercise: exercise.trim(),
       reps: Number(reps),
+      weight: weight ? Number(weight) : null,
     };
     onAdd(entry);
     await addDoc(collection(db, 'workouts'), {
       date: entry.date,
       exercise: entry.exercise,
       reps: entry.reps,
+      weight: entry.weight,
       createdAt: serverTimestamp()
     });
     setExercise('');
     setReps('');
+    setWeight('');
   }
 
   return (
@@ -43,6 +47,10 @@ export default function InputWorkout({ onAdd }) {
           <label>
             Reps
             <input type="number" min="1" value={reps} onChange={e => setReps(e.target.value)} />
+          </label>
+          <label>
+            Weight (lbs)
+            <input type="number" min="0" step="0.5" value={weight} onChange={e => setWeight(e.target.value)} placeholder="lbs" />
           </label>
         </div>
         <div style={{ textAlign: 'right' }}>
