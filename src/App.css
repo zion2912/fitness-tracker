@@ -52,8 +52,9 @@ h2 {
 .workout-form .row {
   display: flex;
   gap: 12px;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .workout-form label {
