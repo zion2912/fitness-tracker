@@ -69,7 +69,7 @@ export default function WorkoutList({ workouts }) {
                 {grouped[date].map(w => (
                   <li key={w.id} className="workout-item">
                     <span>{w.exercise}</span>
-                    <span>{w.reps ? `${w.reps} reps` : ''}{w.weight ? ` @ ${w.weight} lbs` : ''}{w.time ? ` in ${w.time} min` : ''}</span>
+                    <span>{w.reps ? `${w.reps} reps` : ''}{w.weight ? ` @ ${w.weight} lbs` : ''}{w.time ? ` ${w.reps ? 'in' : 'for'} ${w.time} min` : ''}</span>
                     <button className="delete-btn" onClick={() => handleDelete(w.id)} aria-label="Delete workout">×</button>
                   </li>
                 ))}
