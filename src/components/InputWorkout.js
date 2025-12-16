@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function InputWorkout({ onAdd }) {
+export default function InputWorkout() {
+  const { user } = useAuth();
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [exercise, setExercise] = useState('');
   const [reps, setReps] = useState('');
@@ -20,13 +22,14 @@ export default function InputWorkout({ onAdd }) {
       weight: weight ? Number(weight) : null,
       time: time ? Number(time) : null,
     };
-    onAdd(entry);
+    // onAdd(entry); // Removed since Firestore handles persistence
     await addDoc(collection(db, 'workouts'), {
       date: entry.date,
       exercise: entry.exercise,
       reps: entry.reps,
       weight: entry.weight,
       time: entry.time,
+      userId: user.uid,
       createdAt: serverTimestamp()
     });
     setExercise('');
