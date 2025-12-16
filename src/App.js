@@ -1,49 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import InputWorkout from './components/InputWorkout';
 import WorkoutList from './components/WorkoutList';
+import Login from './components/Login';
+import Signup from './components/Signup';
 
-function App() {
-  const [workouts, setWorkouts] = useState([]);
+function AppContent() {
+  const { user, logout } = useAuth();
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('workouts');
-      if (raw) setWorkouts(JSON.parse(raw));
-    } catch (e) {
-      console.error('Failed to load workouts', e);
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('workouts', JSON.stringify(workouts));
-    } catch (e) {
-      console.error('Failed to save workouts', e);
-    }
-  }, [workouts]);
-
-  function addWorkout(entry) {
-    setWorkouts(prev => [entry, ...prev]);
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
   }
 
   return (
+    <div className="App">
+      <nav className="App-nav">
+        <Link to="/input">Add Workout</Link>
+        <span className="nav-sep">|</span>
+        <Link to="/history">History</Link>
+        <span className="nav-sep">|</span>
+        <button className="logout-btn" onClick={logout}>Logout</button>
+      </nav>
+      <main>
+        <Routes>
+          <Route path="/" element={<Navigate to="/input" replace />} />
+          <Route path="/input" element={<InputWorkout />} />
+          <Route path="/history" element={<WorkoutList />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
     <BrowserRouter>
-      <div className="App">
-        <nav className="App-nav">
-          <Link to="/input">Add Workout</Link>
-          <span className="nav-sep">|</span>
-          <Link to="/history">History</Link>
-        </nav>
-        <main>
-          <Routes>
-            <Route path="/" element={<Navigate to="/input" replace />} />
-            <Route path="/input" element={<InputWorkout onAdd={addWorkout} />} />
-            <Route path="/history" element={<WorkoutList workouts={workouts} />} />
-          </Routes>
-        </main>
-      </div>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

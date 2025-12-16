@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, where, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
+import { useAuth } from '../contexts/AuthContext';
 
 function groupByDate(items) {
   return items.reduce((acc, it) => {
@@ -9,20 +10,22 @@ function groupByDate(items) {
   }, {});
 }
 
-export default function WorkoutList({ workouts }) {
+export default function WorkoutList() {
+  const { user } = useAuth();
   const [firestoreWorkouts, setFirestoreWorkouts] = useState([]);
   const [openDates, setOpenDates] = useState(() => new Set());
 
   useEffect(() => {
-    const q = query(collection(db, 'workouts'), orderBy('createdAt', 'desc'));
+    if (!user) return;
+    const q = query(collection(db, 'workouts'), where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
     const unsub = onSnapshot(q, snapshot => {
       const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setFirestoreWorkouts(items);
     });
     return unsub;
-  }, []);
+  }, [user]);
 
-  const allWorkouts = (firestoreWorkouts && firestoreWorkouts.length > 0) ? firestoreWorkouts : (workouts || []);
+  const allWorkouts = firestoreWorkouts;
   if (!allWorkouts || allWorkouts.length === 0) return (
     <div className="no-workouts">
       <p>No workouts yet.</p>
