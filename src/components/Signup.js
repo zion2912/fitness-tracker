@@ -31,15 +31,15 @@ export default function Signup() {
       <form onSubmit={handleSubmit}>
         <div className="row">
           <label>
-            Email
+            <div className="label-text">Email</div>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
           </label>
           <label>
-            Password
+            <div className="label-text">Password</div>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </label>
           <label>
-            Confirm Password
+            <div className="label-text">Confirm Password</div>
             <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
           </label>
         </div>
