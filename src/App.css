@@ -212,6 +212,13 @@ h2 {
   text-decoration: none;
 }
 
+/* dashboard styles */
+.dashboard-input {
+  max-width: 300px;
+  margin: 0 auto 20px auto;
+}
+
+
 .date-header {
   width: 100%;
   display: flex;

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import InputWorkout from './components/InputWorkout';
 import WorkoutList from './components/WorkoutList';
+import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Signup from './components/Signup';
 
@@ -26,13 +27,14 @@ function AppContent() {
         <Link to="/input">Add Workout</Link>
         <span className="nav-sep">|</span>
         <Link to="/history">History</Link>
-        <span className="nav-sep">|</span>
-        <button className="logout-btn" onClick={logout}>Logout</button>
+        <span className="nav-sep">|</span>        <Link to="/dashboard">Dashboard</Link>
+        <span className="nav-sep">|</span>        <button className="logout-btn" onClick={logout}>Logout</button>
       </nav>
       <main>
         <Routes>
           <Route path="/" element={<Navigate to="/input" replace />} />
           <Route path="/input" element={<InputWorkout />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/history" element={<WorkoutList />} />
         </Routes>
       </main>
