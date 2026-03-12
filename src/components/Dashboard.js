@@ -7,6 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 export default function Dashboard() {
   const { user } = useAuth();
   const [workoutName, setWorkoutName] = useState('');
+  const [metric, setMetric] = useState('reps');
   const [data, setData] = useState([]);
 
   const fetchData = useCallback(async (name) => {
@@ -46,7 +47,7 @@ export default function Dashboard() {
   return (
     <section className="panel">
       <h2>Workout Dashboard</h2>
-      <div className="row dashboard-input" style={{ marginBottom: 12 }}>
+      <div className="row dashboard-input" style={{ marginBottom: 12, alignItems: 'center' }}>
         <label>
           Workout name
           <input
@@ -56,17 +57,30 @@ export default function Dashboard() {
             placeholder="e.g. Push-ups"
           />
         </label>
+        <label style={{ marginLeft: 16 }}>
+          Metric
+          <select value={metric} onChange={e => setMetric(e.target.value)} style={{ marginTop: 6, padding: '6px 8px', fontSize: 14 }}>
+            <option value="reps">Reps</option>
+            <option value="weight">Weight</option>
+          </select>
+        </label>
       </div>
       {data.length > 0 ? (
-        <div style={{ width: '100%', height: 400, marginTop: 20 }}>
+        <div style={{ width: '100%', height: 300, marginTop: 20 }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
-              <YAxis label={{ value: 'Reps', angle: -90, position: 'insideLeft' }} />
+              <YAxis label={{ value: metric === 'reps' ? 'Reps' : 'Weight', angle: -90, position: 'insideLeft' }} />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="reps" stroke="#0ea5e9" strokeWidth={2} name="Reps" />
+              <Line
+                type="monotone"
+                dataKey={metric}
+                stroke={metric === 'reps' ? '#0ea5e9' : '#f59e0b'}
+                strokeWidth={2}
+                name={metric === 'reps' ? 'Reps' : 'Weight'}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
