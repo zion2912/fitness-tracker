@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
@@ -7,36 +7,44 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 export default function Dashboard() {
   const { user } = useAuth();
   const [workoutName, setWorkoutName] = useState('');
-  const [data, setData] = useState([]); // will hold {date, reps, weight}
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  async function fetchData(name) {
+  const fetchData = useCallback(async (name) => {
     if (!user || !name) return;
-    const q = query(
-      collection(db, 'workouts'),
-      where('userId', '==', user.uid),
-      where('exercise', '==', name),
-      orderBy('date', 'asc')
-    );
-    const snap = await getDocs(q);
-    let items = snap.docs.map(d => d.data());
-    // filter to last 3 months
-    const today = new Date();
-    const past = new Date(today);
-    past.setMonth(past.getMonth() - 3);
-    const cutoff = past.toISOString().slice(0,10); // yyyy-mm-dd
-    items = items.filter(it => it.date >= cutoff);
-    // convert to chart-friendly
-    const chart = items.map(it => ({
-      date: it.date,
-      reps: it.reps || 0,
-      weight: it.weight || 0
-    }));
-    setData(chart);
-  }
+    setLoading(true);
+    try {
+      const q = query(
+        collection(db, 'workouts'),
+        where('userId', '==', user.uid),
+        where('exercise', '==', name),
+        orderBy('date', 'asc')
+      );
+      const snap = await getDocs(q);
+      let items = snap.docs.map(d => d.data());
+      // filter to last 3 months
+      const today = new Date();
+      const past = new Date(today);
+      past.setMonth(past.getMonth() - 3);
+      const cutoff = past.toISOString().slice(0,10);
+      items = items.filter(it => it.date >= cutoff);
+      // convert to chart-friendly
+      const chart = items.map(it => ({
+        date: it.date,
+        reps: it.reps || 0,
+        weight: it.weight || 0
+      }));
+      setData(chart);
+    } catch (error) {
+      console.error('Error fetching workouts:', error);
+      setData([]);
+    }
+    setLoading(false);
+  }, [user]);
 
   useEffect(() => {
     if (workoutName) fetchData(workoutName);
-  }, [workoutName]);
+  }, [workoutName, fetchData]);
 
   return (
     <section className="panel">
