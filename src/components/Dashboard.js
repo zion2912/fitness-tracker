@@ -8,11 +8,9 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [workoutName, setWorkoutName] = useState('');
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async (name) => {
     if (!user || !name) return;
-    setLoading(true);
     try {
       const q = query(
         collection(db, 'workouts'),
@@ -39,7 +37,6 @@ export default function Dashboard() {
       console.error('Error fetching workouts:', error);
       setData([]);
     }
-    setLoading(false);
   }, [user]);
 
   useEffect(() => {
