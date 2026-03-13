@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -10,6 +10,28 @@ export default function InputWorkout() {
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState('');
   const [time, setTime] = useState('');
+  const [exercises, setExercises] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Fetch unique exercise names from user's workouts
+  useEffect(() => {
+    if (!user) return;
+    const fetchExercises = async () => {
+      try {
+        const q = query(collection(db, 'workouts'), where('userId', '==', user.uid));
+        const snap = await getDocs(q);
+        const uniqueNames = [...new Set(snap.docs.map(d => d.data().exercise))];
+        setExercises(uniqueNames.sort());
+      } catch (error) {
+        console.error('Error fetching exercises:', error);
+      }
+    };
+    fetchExercises();
+  }, [user]);
+
+  const filteredExercises = exercise.trim()
+    ? exercises.filter(e => e.toLowerCase().includes(exercise.toLowerCase()))
+    : exercises;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -49,7 +71,59 @@ export default function InputWorkout() {
           </label>
           <label>
             Exercise
-            <input type="text" value={exercise} onChange={e => setExercise(e.target.value)} placeholder="e.g. Push-ups" />
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                value={exercise}
+                onChange={e => {
+                  setExercise(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                placeholder="e.g. Push-ups"
+              />
+              {showDropdown && filteredExercises.length > 0 && (
+                <ul
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    background: '#fff',
+                    border: '1px solid #e6e9ee',
+                    borderTop: 'none',
+                    borderRadius: '0 0 6px 6px',
+                    margin: 0,
+                    padding: '4px 0',
+                    listStyle: 'none',
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                    zIndex: 10
+                  }}
+                >
+                  {filteredExercises.map(ex => (
+                    <li
+                      key={ex}
+                      onClick={() => {
+                        setExercise(ex);
+                        setShowDropdown(false);
+                      }}
+                      style={{
+                        padding: '8px 10px',
+                        cursor: 'pointer',
+                        color: '#0f172a',
+                        borderBottom: '1px solid #f1f5f9'
+                      }}
+                      onMouseEnter={e => e.target.style.background = '#f1f5f9'}
+                      onMouseLeave={e => e.target.style.background = '#fff'}
+                    >
+                      {ex}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </label>
           <label>
             Reps
