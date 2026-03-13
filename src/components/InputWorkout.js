@@ -138,7 +138,7 @@ export default function InputWorkout() {
             <input type="number" min="0" step="0.5" value={time} onChange={e => setTime(e.target.value)} placeholder="minutes" />
           </label>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div style={{ textAlign: 'center' }}>
           <button className="btn" type="submit" disabled={!exercise.trim()}>Add</button>
         </div>
       </form>
