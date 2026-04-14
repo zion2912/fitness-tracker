@@ -4,6 +4,31 @@ import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+// Custom tooltip for line chart
+const CustomTooltip = ({ active, payload, label, metric }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div style={{
+        background: '#ffffff',
+        border: '2px solid #e2e8f0',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        padding: '8px 12px',
+        fontSize: '13px'
+      }}>
+        <p style={{ margin: '0 0 4px 0', color: '#0f172a', fontWeight: 600 }}>
+          {data.date}
+        </p>
+        <p style={{ margin: 0, color: '#475569' }}>
+          {metric === 'reps' ? 'Reps' : 'Weight'}: <strong>{payload[0].value}</strong>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [workoutName, setWorkoutName] = useState('');
@@ -34,12 +59,28 @@ export default function Dashboard() {
       let items = snap.docs.map(d => d.data());
       // filter by date range
       items = items.filter(it => it.date >= startDate && it.date <= endDate);
-      // convert to chart-friendly
-      const chart = items.map(it => ({
-        date: it.date,
-        reps: it.reps || 0,
-        weight: it.weight || 0
-      }));
+      
+      // Group by date and take max values
+      const grouped = {};
+      items.forEach(it => {
+        const date = it.date;
+        if (!grouped[date]) {
+          grouped[date] = { reps: 0, weight: 0 };
+        }
+        const reps = it.reps || 0;
+        const weight = it.weight || 0;
+        grouped[date].reps = Math.max(grouped[date].reps, reps);
+        grouped[date].weight = Math.max(grouped[date].weight, weight);
+      });
+      
+      // convert to chart-friendly array, sorted by date
+      const chart = Object.keys(grouped)
+        .sort()
+        .map(date => ({
+          date,
+          reps: grouped[date].reps,
+          weight: grouped[date].weight
+        }));
       setData(chart);
     } catch (error) {
       console.error('Error fetching workouts:', error);
@@ -226,7 +267,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="date" stroke="#94a3b8" style={{ fontSize: 12 }} />
                   <YAxis label={{ value: metric === 'reps' ? 'Reps' : 'Weight (lbs)', angle: -90, position: 'insideLeft' }} stroke="#94a3b8" style={{ fontSize: 12 }} />
-                  <Tooltip contentStyle={{ background: '#ffffff', border: '2px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                  <Tooltip content={<CustomTooltip metric={metric} />} />
                   <Legend />
                   <Line
                     type="monotone"
