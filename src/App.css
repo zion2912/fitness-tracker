@@ -612,6 +612,43 @@ h2 {
     padding: 16px;
     margin: 16px 8px;
   }
+  /* mobile form adjustments */
+  .auth-panel {
+    max-width: 100%;
+    margin: 20px auto;
+    padding: 0;
+  }
+  .auth-panel .row {
+    gap: 12px;
+  }
+  .auth-panel input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .auth-panel button {
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  .auth-panel h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  .workout-form label {
+    font-size: 12px;
+  }
+  .workout-form input[type="text"],
+  .workout-form input[type="date"],
+  .workout-form input[type="number"],
+  .workout-form select {
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  .btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
   .dashboard-exercise-search {
     max-width: 100%;
     padding: 0 4px;
