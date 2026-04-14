@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, where, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, where, deleteDoc, doc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -84,6 +84,23 @@ export default function WorkoutList() {
   function cancelEdit() {
     setEditingId(null);
     setEditForm({});
+  }
+
+  async function handleDuplicate(workout) {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      await addDoc(collection(db, 'workouts'), {
+        date: today,
+        exercise: workout.exercise,
+        reps: workout.reps,
+        weight: workout.weight,
+        time: workout.time,
+        userId: user.uid,
+        createdAt: serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Error duplicating workout:', error);
+    }
   }
 
   return (
@@ -180,6 +197,14 @@ export default function WorkoutList() {
                               style={{ background: '#0ea5e9', width: 'auto', padding: '4px 8px', fontSize: 14, marginLeft: 0 }}
                             >
                               ✏
+                            </button>
+                            <button
+                              className="delete-btn"
+                              onClick={() => handleDuplicate(w)}
+                              aria-label="Duplicate workout"
+                              style={{ background: '#8b5cf6', width: 'auto', padding: '4px 8px', fontSize: 14 }}
+                            >
+                              ⎘
                             </button>
                             <button className="delete-btn" onClick={() => handleDelete(w.id)} aria-label="Delete workout">×</button>
                           </div>
