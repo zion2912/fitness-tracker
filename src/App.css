@@ -370,6 +370,7 @@ h2 {
   position: relative;
   max-width: 320px;
   margin: 0 auto 24px;
+  width: 100%;
 }
 
 .dashboard-exercise-search input {
@@ -382,6 +383,7 @@ h2 {
   color: #0f172a;
   font-weight: 500;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .dashboard-exercise-search input:focus {
@@ -404,6 +406,7 @@ h2 {
   overflow-y: auto;
   z-index: 20;
   box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15);
+  box-sizing: border-box;
 }
 
 .dashboard-exercise-dropdown li {
@@ -602,5 +605,12 @@ h2 {
   .panel {
     padding: 16px;
     margin: 16px 8px;
+  }
+  .dashboard-exercise-search {
+    max-width: 100%;
+    padding: 0 4px;
+  }
+  .dashboard-exercise-dropdown {
+    max-height: 180px;
   }
 }
