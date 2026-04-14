@@ -144,209 +144,162 @@ export default function Dashboard() {
       <h2>Workout Dashboard</h2>
 
       {/* Mode Toggle */}
-      <div style={{ marginBottom: 16, display: 'flex', gap: 8, justifyContent: 'center' }}>
+      <div className="dashboard-mode-toggle">
         <button
+          className={mode === 'trend' ? 'active' : ''}
           onClick={() => {
             setMode('trend');
             setSelectedExercises([]);
           }}
-          style={{
-            padding: '8px 16px',
-            background: mode === 'trend' ? '#0ea5e9' : '#e6e9ee',
-            color: mode === 'trend' ? '#fff' : '#0f172a',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 500
-          }}
         >
-          Trend
+          Trend Chart
         </button>
         <button
+          className={mode === 'compare' ? 'active' : ''}
           onClick={() => {
             setMode('compare');
             setWorkoutName('');
           }}
-          style={{
-            padding: '8px 16px',
-            background: mode === 'compare' ? '#0ea5e9' : '#e6e9ee',
-            color: mode === 'compare' ? '#fff' : '#0f172a',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 500
-          }}
         >
-          Compare
+          Compare Exercises
         </button>
       </div>
 
       {/* Date Range */}
-      <div className="row dashboard-input" style={{ marginBottom: 12, alignItems: 'center', justifyContent: 'center', gap: 12, flexDirection: 'column' }}>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', alignItems: 'flex-end' }}>
-          <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            From
-            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={{ marginTop: 4 }} />
-          </label>
-          <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            To
-            <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} style={{ marginTop: 4 }} />
-          </label>
-        </div>
+      <div className="dashboard-date-range">
+        <label>
+          From
+          <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+        </label>
+        <label>
+          To
+          <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+        </label>
       </div>
 
       {mode === 'trend' ? (
         <>
           {/* Trend Mode */}
-          <div className="row dashboard-input" style={{ marginBottom: 12, alignItems: 'center', justifyContent: 'center' }}>
-            <label>
-              Workout name
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="text"
-                  value={workoutName}
-                  onChange={e => {
-                    setWorkoutName(e.target.value);
-                    setShowDropdown(true);
-                  }}
-                  onFocus={() => setShowDropdown(true)}
-                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                  placeholder="e.g. Push-ups"
-                />
-                {showDropdown && filteredExercises.length > 0 && (
-                  <ul
-                    style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      right: 0,
-                      background: '#fff',
-                      border: '1px solid #e6e9ee',
-                      borderTop: 'none',
-                      borderRadius: '0 0 6px 6px',
-                      margin: 0,
-                      padding: '4px 0',
-                      listStyle: 'none',
-                      maxHeight: '200px',
-                      overflowY: 'auto',
-                      zIndex: 10
+          <div className="dashboard-exercise-search">
+            <input
+              type="text"
+              value={workoutName}
+              onChange={e => {
+                setWorkoutName(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+              placeholder="Search exercise..."
+            />
+            {showDropdown && filteredExercises.length > 0 && (
+              <ul className="dashboard-exercise-dropdown">
+                {filteredExercises.map(ex => (
+                  <li
+                    key={ex}
+                    onClick={() => {
+                      setWorkoutName(ex);
+                      setShowDropdown(false);
                     }}
                   >
-                    {filteredExercises.map(ex => (
-                      <li
-                        key={ex}
-                        onClick={() => {
-                          setWorkoutName(ex);
-                          setShowDropdown(false);
-                        }}
-                        style={{
-                          padding: '8px 10px',
-                          cursor: 'pointer',
-                          color: '#0f172a',
-                          borderBottom: '1px solid #f1f5f9'
-                        }}
-                        onMouseEnter={e => e.target.style.background = '#f1f5f9'}
-                        onMouseLeave={e => e.target.style.background = '#fff'}
-                      >
-                        {ex}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </label>
-            <label style={{ marginLeft: 16 }}>
+                    {ex}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="dashboard-metric-select">
+            <label>
               Metric
-              <select value={metric} onChange={e => setMetric(e.target.value)} style={{ marginTop: 6, padding: '6px 8px', fontSize: 14 }}>
+              <select value={metric} onChange={e => setMetric(e.target.value)}>
                 <option value="reps">Reps</option>
-                <option value="weight">Weight</option>
+                <option value="weight">Weight (lbs)</option>
               </select>
             </label>
           </div>
+
           {data.length > 0 ? (
-            <div style={{ width: '100%', height: 300, marginTop: 20, display: 'flex', justifyContent: 'center' }}>
+            <div className="dashboard-chart-container">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis label={{ value: metric === 'reps' ? 'Reps' : 'Weight', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
+                <LineChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="date" stroke="#94a3b8" style={{ fontSize: 12 }} />
+                  <YAxis label={{ value: metric === 'reps' ? 'Reps' : 'Weight (lbs)', angle: -90, position: 'insideLeft' }} stroke="#94a3b8" style={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ background: '#ffffff', border: '2px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                   <Legend />
                   <Line
                     type="monotone"
                     dataKey={metric}
-                    stroke={metric === 'reps' ? '#0ea5e9' : '#f59e0b'}
-                    strokeWidth={2}
+                    stroke={metric === 'reps' ? '#6366f1' : '#f59e0b'}
+                    strokeWidth={3}
+                    dot={{ fill: metric === 'reps' ? '#6366f1' : '#f59e0b', r: 4 }}
+                    activeDot={{ r: 6 }}
                     name={metric === 'reps' ? 'Reps' : 'Weight'}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           ) : workoutName ? (
-            <p style={{ marginTop: 20, textAlign: 'center' }}>No data found for "{workoutName}" in this date range.</p>
+            <p className="dashboard-message">No data found for "{workoutName}" in this date range.</p>
           ) : (
-            <p style={{ marginTop: 20, textAlign: 'center' }}>Enter a workout name above to see your progression.</p>
+            <p className="dashboard-message">Search for an exercise to view your progression over time.</p>
           )}
         </>
       ) : (
         <>
           {/* Compare Mode */}
-          <div style={{ marginBottom: 16 }}>
-            <p style={{ marginBottom: 8, fontWeight: 500 }}>Select exercises to compare:</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+          <div className="dashboard-compare-exercises">
+            <p>Select exercises to compare:</p>
+            <div className="dashboard-compare-buttons">
               {exercises.map(ex => (
                 <button
                   key={ex}
+                  className={selectedExercises.includes(ex) ? 'selected' : ''}
                   onClick={() =>
                     setSelectedExercises(prev =>
                       prev.includes(ex) ? prev.filter(e => e !== ex) : [...prev, ex]
                     )
                   }
-                  style={{
-                    padding: '6px 12px',
-                    background: selectedExercises.includes(ex) ? '#0ea5e9' : '#e6e9ee',
-                    color: selectedExercises.includes(ex) ? '#fff' : '#0f172a',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: 13
-                  }}
                 >
                   {ex}
                 </button>
               ))}
             </div>
           </div>
-          <div style={{ marginBottom: 12 }}>
+
+          <div className="dashboard-metric-select">
             <label>
               Metric
-              <select value={metric} onChange={e => setMetric(e.target.value)} style={{ marginTop: 6, padding: '6px 8px', fontSize: 14 }}>
+              <select value={metric} onChange={e => setMetric(e.target.value)}>
                 <option value="reps">Reps (Max)</option>
                 <option value="weight">Weight (Max)</option>
               </select>
             </label>
           </div>
+
           {compareData.length > 0 ? (
-            <div style={{ width: '100%', height: 300, marginTop: 20, display: 'flex', justifyContent: 'center' }}>
+            <div className="dashboard-chart-container">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={compareData} margin={{ top: 5, right: 30, left: 0, bottom: 40 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
-                  <YAxis label={{ value: metric === 'reps' ? 'Max Reps' : 'Max Weight', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
+                <BarChart data={compareData} margin={{ top: 5, right: 20, left: -20, bottom: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} stroke="#94a3b8" style={{ fontSize: 12 }} />
+                  <YAxis label={{ value: metric === 'reps' ? 'Max Reps' : 'Max Weight (lbs)', angle: -90, position: 'insideLeft' }} stroke="#94a3b8" style={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ background: '#ffffff', border: '2px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                   <Legend />
                   <Bar
                     dataKey={metric}
-                    fill={metric === 'reps' ? '#0ea5e9' : '#f59e0b'}
+                    fill={metric === 'reps' ? '#6366f1' : '#f59e0b'}
+                    radius={[8, 8, 0, 0]}
                     name={metric === 'reps' ? 'Max Reps' : 'Max Weight'}
                   />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           ) : selectedExercises.length > 0 ? (
-            <p style={{ marginTop: 20 }}>No data found for selected exercises in this date range.</p>
+            <p className="dashboard-message">No data found for selected exercises in this date range.</p>
           ) : (
-            <p style={{ marginTop: 20 }}>Select exercises above to compare.</p>
+            <p className="dashboard-message">Select exercises above to compare your performance.</p>
           )}
         </>
       )}
