@@ -521,6 +521,8 @@ h2 {
   border-radius: 14px;
   padding: 16px;
   border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .dashboard-chart-container svg {
@@ -580,6 +582,10 @@ h2 {
   h2 {
     font-size: 24px;
   }
+  .dashboard-chart-container {
+    height: 300px;
+    padding: 14px;
+  }
 }
 
 /* mobile adjustments for navbar and layout */
@@ -612,5 +618,10 @@ h2 {
   }
   .dashboard-exercise-dropdown {
     max-height: 180px;
+  }
+  .dashboard-chart-container {
+    height: 280px;
+    padding: 12px;
+    margin-top: 16px;
   }
 }
