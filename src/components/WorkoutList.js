@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, orderBy, where, deleteDoc, doc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 function groupByDate(items) {
   return items.reduce((acc, it) => {
@@ -12,6 +13,7 @@ function groupByDate(items) {
 
 export default function WorkoutList() {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [firestoreWorkouts, setFirestoreWorkouts] = useState([]);
   const [openDates, setOpenDates] = useState(() => new Set());
   const [editingId, setEditingId] = useState(null);
@@ -49,8 +51,10 @@ export default function WorkoutList() {
   async function handleDelete(docId) {
     try {
       await deleteDoc(doc(db, 'workouts', docId));
+      addToast('Workout deleted', 'success');
     } catch (error) {
       console.error('Error deleting workout:', error);
+      addToast('Failed to delete workout', 'error');
     }
   }
 
@@ -76,8 +80,10 @@ export default function WorkoutList() {
       });
       setEditingId(null);
       setEditForm({});
+      addToast('Workout updated', 'success');
     } catch (error) {
       console.error('Error updating workout:', error);
+      addToast('Failed to update workout', 'error');
     }
   }
 
@@ -98,8 +104,10 @@ export default function WorkoutList() {
         userId: user.uid,
         createdAt: serverTimestamp()
       });
+      addToast(`${workout.exercise} duplicated for today!`, 'success');
     } catch (error) {
       console.error('Error duplicating workout:', error);
+      addToast('Failed to duplicate workout', 'error');
     }
   }
 

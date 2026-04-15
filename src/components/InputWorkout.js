@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 export default function InputWorkout() {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [exercise, setExercise] = useState('');
   const [reps, setReps] = useState('');
@@ -35,29 +37,30 @@ export default function InputWorkout() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!exercise.trim()) return;
-    const entry = {
-      id: Date.now(),
-      date,
-      exercise: exercise.trim(),
-      reps: reps ? Number(reps) : null,
-      weight: weight ? Number(weight) : null,
-      time: time ? Number(time) : null,
-    };
-    // onAdd(entry); // Removed since Firestore handles persistence
-    await addDoc(collection(db, 'workouts'), {
-      date: entry.date,
-      exercise: entry.exercise,
-      reps: entry.reps,
-      weight: entry.weight,
-      time: entry.time,
-      userId: user.uid,
-      createdAt: serverTimestamp()
-    });
-    setExercise('');
-    setReps('');
-    setWeight('');
-    setTime('');
+    if (!exercise.trim()) {
+      addToast('Enter an exercise name', 'error');
+      return;
+    }
+    
+    try {
+      await addDoc(collection(db, 'workouts'), {
+        date,
+        exercise: exercise.trim(),
+        reps: reps ? Number(reps) : null,
+        weight: weight ? Number(weight) : null,
+        time: time ? Number(time) : null,
+        userId: user.uid,
+        createdAt: serverTimestamp()
+      });
+      setExercise('');
+      setReps('');
+      setWeight('');
+      setTime('');
+      addToast(`${exercise.trim()} added successfully!`, 'success');
+    } catch (error) {
+      console.error('Error adding workout:', error);
+      addToast('Failed to add workout. Please try again.', 'error');
+    }
   }
 
   return (

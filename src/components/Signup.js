@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
@@ -8,19 +9,23 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const { signup } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      addToast('Passwords do not match', 'error');
       return;
     }
     try {
       await signup(email, password);
+      addToast('Account created successfully!', 'success');
       navigate('/');
     } catch (err) {
       setError(err.message);
+      addToast(err.message || 'Signup failed', 'error');
     }
   };
 
