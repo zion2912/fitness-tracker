@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -7,24 +8,29 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login, loginWithGoogle } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await login(email, password);
+      addToast('Login successful!', 'success');
       navigate('/');
     } catch (err) {
       setError(err.message);
+      addToast(err.message || 'Login failed', 'error');
     }
   };
 
   const handleGoogle = async () => {
     try {
       await loginWithGoogle();
+      addToast('Login successful!', 'success');
       navigate('/');
     } catch (err) {
       setError(err.message);
+      addToast(err.message || 'Google login failed', 'error');
     }
   };
 

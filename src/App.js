@@ -2,6 +2,9 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
+import { useToast } from './contexts/ToastContext';
+import Toast from './components/Toast';
 import InputWorkout from './components/InputWorkout';
 import WorkoutList from './components/WorkoutList';
 import Dashboard from './components/Dashboard';
@@ -10,6 +13,16 @@ import Signup from './components/Signup';
 
 function AppContent() {
   const { user, logout } = useAuth();
+  const { addToast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      addToast('Logged out successfully', 'success');
+    } catch (error) {
+      addToast('Logout failed', 'error');
+    }
+  };
 
   if (!user) {
     return (
@@ -28,7 +41,7 @@ function AppContent() {
         <span className="nav-sep">|</span>
         <Link to="/history">History</Link>
         <span className="nav-sep">|</span>        <Link to="/dashboard">Dashboard</Link>
-        <span className="nav-sep">|</span>        <button className="logout-btn" onClick={logout}>Logout</button>
+        <span className="nav-sep">|</span>        <button className="logout-btn" onClick={handleLogout}>Logout</button>
       </nav>
       <main>
         <Routes>
@@ -46,7 +59,10 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppContent />
+        <ToastProvider>
+          <Toast />
+          <AppContent />
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );
