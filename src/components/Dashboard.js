@@ -29,31 +29,6 @@ const CustomTooltip = ({ active, payload, label, metric }) => {
   return null;
 };
 
-// Custom tooltip for bar chart
-const CustomBarTooltip = ({ active, payload, metric }) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    return (
-      <div style={{
-        background: '#ffffff',
-        border: '2px solid #e2e8f0',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        padding: '8px 12px',
-        fontSize: '13px'
-      }}>
-        <p style={{ margin: '0 0 4px 0', color: '#0f172a', fontWeight: 600 }}>
-          {data.name}
-        </p>
-        <p style={{ margin: 0, color: '#475569' }}>
-          {metric === 'reps' ? 'Max Reps' : 'Max Weight'}: <strong>{payload[0].value}</strong>
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
-
 export default function Dashboard() {
   const { user } = useAuth();
   const [workoutName, setWorkoutName] = useState('');
