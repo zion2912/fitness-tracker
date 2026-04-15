@@ -326,7 +326,6 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} stroke="#94a3b8" style={{ fontSize: 12 }} />
                   <YAxis label={{ value: metric === 'reps' ? 'Max Reps' : 'Max Weight (lbs)', angle: -90, position: 'insideLeft' }} stroke="#94a3b8" style={{ fontSize: 12 }} />
-                  <Tooltip contentStyle={{ background: '#ffffff', border: '2px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                   <Legend />
                   <Bar
                     dataKey={metric}

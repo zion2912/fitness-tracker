@@ -523,11 +523,20 @@ h2 {
   padding: 16px;
   border: 1px solid #e2e8f0;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .dashboard-chart-container svg {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.04));
+}
+
+/* Recharts tooltip positioning */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+.recharts-default-tooltip {
+  visibility: visible !important;
 }
 
 /* Empty state messages */
@@ -596,15 +605,17 @@ h2 {
     padding-right: 12px;
   }
   .App-nav {
-    flex-wrap: wrap;
-    gap: 6px;
+    flex-wrap: nowrap;
+    gap: 4px;
     padding: 8px 12px;
     height: auto;
+    overflow-x: auto;
   }
   .App-nav a,
   .logout-btn {
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 6px 10px;
+    font-size: 12px;
+    white-space: nowrap;
   }
   .nav-sep {
     display: none;
