@@ -174,7 +174,10 @@ export default function WorkoutList() {
               onClick={() => toggleDate(date)}
               aria-expanded={isOpen}
             >
-              <span>{date}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+                <span>{date}</span>
+                {hasTitle && <span className="day-title">{dayTitles[date]}</span>}
+              </div>
               <span className={`chevron ${isOpen ? 'open' : ''}`} aria-hidden>▾</span>
             </button>
             {isEditingTitle ? (
@@ -201,8 +204,7 @@ export default function WorkoutList() {
                 </button>
               </div>
             ) : (
-              <div style={{ padding: '8px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
-                {hasTitle && <span className="day-title">{dayTitles[date]}</span>}
+              <div style={{ padding: '8px 0' }}>
                 <button
                   onClick={() => startEditDayTitle(date)}
                   style={{ padding: '4px 8px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, fontSize: 12 }}
