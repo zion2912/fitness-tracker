@@ -241,6 +241,8 @@ h2 {
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  max-width: 350px;
+  margin: 0 auto;
 }
 
 .label-text {
@@ -653,6 +655,7 @@ h2 {
   .auth-panel input {
     padding: 10px 12px;
     font-size: 16px;
+    max-width: 100%;
   }
   .auth-panel button {
     padding: 12px;
