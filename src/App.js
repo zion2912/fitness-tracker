@@ -10,6 +10,7 @@ import WorkoutList from './components/WorkoutList';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import Account from './components/Account';
 
 function AppContent() {
   const { user, logout } = useAuth();
@@ -40,8 +41,12 @@ function AppContent() {
         <Link to="/input">Add Workout</Link>
         <span className="nav-sep">|</span>
         <Link to="/history">History</Link>
-        <span className="nav-sep">|</span>        <Link to="/dashboard">Dashboard</Link>
-        <span className="nav-sep">|</span>        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        <span className="nav-sep">|</span>
+        <Link to="/dashboard">Dashboard</Link>
+        <span className="nav-sep">|</span>
+        <Link to="/account">Account</Link>
+        <span className="nav-sep">|</span>
+        <button className="logout-btn" onClick={handleLogout}>Logout</button>
       </nav>
       <main>
         <Routes>
@@ -49,6 +54,7 @@ function AppContent() {
           <Route path="/input" element={<InputWorkout />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/history" element={<WorkoutList />} />
+          <Route path="/account" element={<Account />} />
         </Routes>
       </main>
     </div>

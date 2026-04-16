@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, where, deleteDoc, doc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, where, deleteDoc, doc, updateDoc, addDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -18,6 +18,9 @@ export default function WorkoutList() {
   const [openDates, setOpenDates] = useState(() => new Set());
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [dayTitles, setDayTitles] = useState({});
+  const [editingDayDate, setEditingDayDate] = useState(null);
+  const [editingDayTitle, setEditingDayTitle] = useState('');
 
   useEffect(() => {
     if (!user) return;
@@ -25,6 +28,20 @@ export default function WorkoutList() {
     const unsub = onSnapshot(q, snapshot => {
       const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setFirestoreWorkouts(items);
+    });
+    return unsub;
+  }, [user]);
+
+  // Fetch day titles
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, 'dayTitles'), where('userId', '==', user.uid));
+    const unsub = onSnapshot(q, snapshot => {
+      const titles = {};
+      snapshot.docs.forEach(d => {
+        titles[d.data().date] = d.data().title;
+      });
+      setDayTitles(titles);
     });
     return unsub;
   }, [user]);
@@ -111,11 +128,45 @@ export default function WorkoutList() {
     }
   }
 
+  async function startEditDayTitle(date) {
+    setEditingDayDate(date);
+    setEditingDayTitle(dayTitles[date] || '');
+  }
+
+  async function saveDayTitle(date) {
+    if (!editingDayTitle.trim()) {
+      addToast('Day title cannot be empty', 'error');
+      return;
+    }
+    try {
+      const titleDocId = `${user.uid}_${date}`;
+      const titleRef = doc(db, 'dayTitles', titleDocId);
+      await setDoc(titleRef, {
+        userId: user.uid,
+        date: date,
+        title: editingDayTitle.trim()
+      });
+      setEditingDayDate(null);
+      setEditingDayTitle('');
+      addToast('Day title saved', 'success');
+    } catch (error) {
+      console.error('Error saving day title:', error);
+      addToast('Failed to save day title', 'error');
+    }
+  }
+
+  function cancelEditDayTitle() {
+    setEditingDayDate(null);
+    setEditingDayTitle('');
+  }
+
   return (
     <section className="panel history">
       <h2>Workout History</h2>
       {dates.map(date => {
         const isOpen = openDates.has(date);
+        const hasTitle = !!dayTitles[date];
+        const isEditingTitle = editingDayDate === date;
         return (
           <div key={date} className="workout-date">
             <button
@@ -126,6 +177,40 @@ export default function WorkoutList() {
               <span>{date}</span>
               <span className={`chevron ${isOpen ? 'open' : ''}`} aria-hidden>▾</span>
             </button>
+            {isEditingTitle ? (
+              <div style={{ padding: '12px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
+                <input
+                  type="text"
+                  value={editingDayTitle}
+                  onChange={e => setEditingDayTitle(e.target.value)}
+                  placeholder="Enter day title (e.g., Leg Day)"
+                  style={{ padding: '8px 12px', fontSize: 14, border: '1px solid #e2e8f0', borderRadius: '6px', flex: 1 }}
+                  autoFocus
+                />
+                <button
+                  onClick={() => saveDayTitle(date)}
+                  style={{ padding: '6px 12px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500 }}
+                >
+                  Save
+                </button>
+                <button
+                  onClick={cancelEditDayTitle}
+                  style={{ padding: '6px 12px', background: '#6b7280', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500 }}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div style={{ padding: '8px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
+                {hasTitle && <span className="day-title">{dayTitles[date]}</span>}
+                <button
+                  onClick={() => startEditDayTitle(date)}
+                  style={{ padding: '4px 8px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, fontSize: 12 }}
+                >
+                  {hasTitle ? 'Edit Title' : 'Add Title'}
+                </button>
+              </div>
+            )}
             {isOpen && (
               <ul className="workout-list">
                 {grouped[date].map(w => {
