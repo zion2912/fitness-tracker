@@ -166,38 +166,30 @@ export default function WorkoutList() {
     <section className="panel history">
       <h2>Workout History</h2>
       <button
-        onClick={() => setShowAddWorkout(true)}
-        style={{
-          margin: '0 auto 20px',   // auto left/right centers it
-          display: 'block',        // block-level so margin works
-          padding: '10px 20px',
-          background: '#4CAF50',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          textAlign: 'center',
-          fontSize: '16px'
-        }}
-      >
-  Add Workout
+  onClick={() => setShowAddWorkout(prev => !prev)}  // toggle open/close
+  style={{
+    margin: '0 auto 20px',
+    display: 'block',
+    padding: '10px 20px',
+    background: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    textAlign: 'center',
+    fontSize: '16px'
+  }}
+>
+  {showAddWorkout ? 'Close Workout' : 'Add Workout'}
 </button>
 
-
-      {showAddWorkout && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <button
-              onClick={() => setShowAddWorkout(false)}
-              style={{ position: 'absolute', top: '10px', right: '10px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer' }}
-            >
-              X
-            </button>
-            <InputWorkout />
-          </div>
-        </div>
-      )}
-
+{showAddWorkout && (
+  <div className="popup-overlay">
+    <div className="popup-content">
+      <InputWorkout />
+    </div>
+  </div>
+)}
       {dates.map(date => {
         const isOpen = openDates.has(date);
         const hasTitle = !!dayTitles[date];
