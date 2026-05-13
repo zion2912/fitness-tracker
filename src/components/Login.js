@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -34,6 +35,19 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      addToast('Please enter your email to reset password', 'error');
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(email);
+      addToast('Password reset email sent!', 'success');
+    } catch (err) {
+      addToast(err.message || 'Failed to send reset email', 'error');
+    }
+  };
+
   return (
     <section className="auth-panel">
       <h2>Login</h2>
@@ -52,6 +66,7 @@ export default function Login() {
         <button className="btn" type="submit">Login</button>
       </form>
       <button className="btn" onClick={handleGoogle} style={{ background: '#4285f4', marginTop: 10 }}>Login with Google</button>
+      <button className="btn" onClick={handleForgotPassword} style={{ background: '#f59e0b', marginTop: 10 }}>Forgot Password</button>
       <p>Don't have an account? <a href="/signup">Sign up</a></p>
     </section>
   );

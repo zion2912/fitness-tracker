@@ -74,7 +74,7 @@ export default function InputWorkout() {
           </label>
           <label>
             Exercise
-            <div style={{ position: 'relative' }}>
+            <div>
               <input
                 type="text"
                 value={exercise}
