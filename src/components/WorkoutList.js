@@ -3,6 +3,7 @@ import { collection, onSnapshot, query, orderBy, where, deleteDoc, doc, updateDo
 import { db } from '../config/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import InputWorkout from './InputWorkout';
 
 function groupByDate(items) {
   return items.reduce((acc, it) => {
@@ -21,6 +22,7 @@ export default function WorkoutList() {
   const [dayTitles, setDayTitles] = useState({});
   const [editingDayDate, setEditingDayDate] = useState(null);
   const [editingDayTitle, setEditingDayTitle] = useState('');
+  const [showAddWorkout, setShowAddWorkout] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -163,6 +165,39 @@ export default function WorkoutList() {
   return (
     <section className="panel history">
       <h2>Workout History</h2>
+      <button
+        onClick={() => setShowAddWorkout(true)}
+        style={{
+          margin: '0 auto 20px',   // auto left/right centers it
+          display: 'block',        // block-level so margin works
+          padding: '10px 20px',
+          background: '#4CAF50',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          textAlign: 'center',
+          fontSize: '16px'
+        }}
+      >
+  Add Workout
+</button>
+
+
+      {showAddWorkout && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <button
+              onClick={() => setShowAddWorkout(false)}
+              style={{ position: 'absolute', top: '10px', right: '10px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer' }}
+            >
+              X
+            </button>
+            <InputWorkout />
+          </div>
+        </div>
+      )}
+
       {dates.map(date => {
         const isOpen = openDates.has(date);
         const hasTitle = !!dayTitles[date];
