@@ -74,7 +74,7 @@ export default function InputWorkout() {
           </label>
           <label>
             Exercise
-            <div>
+            <div style={{ position: 'relative' }}>  {/* Added relative positioning to parent container */}
               <input
                 type="text"
                 value={exercise}
@@ -90,7 +90,7 @@ export default function InputWorkout() {
                 <ul
                   style={{
                     position: 'absolute',
-                    top: '100%',
+                    top: '100%', // Ensures the dropdown starts immediately below the input field
                     left: 0,
                     right: 0,
                     background: '#fff',
