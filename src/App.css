@@ -191,17 +191,27 @@ h2 {
   transition: all 0.2s ease;
 }
 
+.panel.history {
+  padding-top: 220px;
+}
+
 .history-add-workout {
-  position: sticky;
+  position: fixed;
   top: 88px;
-  z-index: 10;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
   margin-bottom: 22px;
   padding-bottom: 14px;
   background: #ffffff;
+  width: min(100%, 1000px);
+  box-sizing: border-box;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .history-add-workout .workout-form-inline {
-  margin: 0;
+  margin: 0 auto;
   padding: 22px;
   border-radius: 18px;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.09);
