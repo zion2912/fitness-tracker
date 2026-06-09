@@ -22,7 +22,6 @@ export default function WorkoutList() {
   const [dayTitles, setDayTitles] = useState({});
   const [editingDayDate, setEditingDayDate] = useState(null);
   const [editingDayTitle, setEditingDayTitle] = useState('');
-  const [showAddWorkout, setShowAddWorkout] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -165,31 +164,9 @@ export default function WorkoutList() {
   return (
     <section className="panel history">
       <h2>Workout History</h2>
-      <button
-  onClick={() => setShowAddWorkout(prev => !prev)}  // toggle open/close
-  style={{
-    margin: '0 auto 20px',
-    display: 'block',
-    padding: '10px 20px',
-    background: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    textAlign: 'center',
-    fontSize: '16px'
-  }}
->
-  {showAddWorkout ? 'Close Workout' : 'Add Workout'}
-</button>
-
-{showAddWorkout && (
-  <div className="popup-overlay">
-    <div className="popup-content">
-      <InputWorkout />
-    </div>
-  </div>
-)}
+      <div className="history-add-workout">
+        <InputWorkout inline />
+      </div>
       {dates.map(date => {
         const isOpen = openDates.has(date);
         const hasTitle = !!dayTitles[date];
@@ -204,12 +181,16 @@ export default function WorkoutList() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 <span>{date}</span>
                 {hasTitle && <span className="day-title">{dayTitles[date]}</span>}
-                <button
-                  onClick={() => startEditDayTitle(date)}
-                  style={{ padding: '4px 8px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, fontSize: 12 }}
+                <span
+                  role="button"
+                  onClick={e => {
+                    e.stopPropagation();
+                    startEditDayTitle(date);
+                  }}
+                  style={{ padding: '4px 8px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, fontSize: 12, display: 'inline-flex', alignItems: 'center' }}
                 >
                   {hasTitle ? 'Edit Title' : 'Add Title'}
-                </button>
+                </span>
               </div>
               <span className={`chevron ${isOpen ? 'open' : ''}`} aria-hidden>▾</span>
             </button>

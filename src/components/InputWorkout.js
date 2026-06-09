@@ -4,7 +4,7 @@ import { db } from '../config/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 
-export default function InputWorkout() {
+export default function InputWorkout({ inline = false }) {
   const { user } = useAuth();
   const { addToast } = useToast();
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -64,7 +64,7 @@ export default function InputWorkout() {
   }
 
   return (
-    <section className="panel">
+    <section className={inline ? 'workout-form-inline' : 'panel'}>
       <h2>Add Workout</h2>
       <form className="workout-form" onSubmit={handleSubmit}>
         <div className="row">
