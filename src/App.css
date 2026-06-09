@@ -105,6 +105,10 @@
   .history-add-workout {
     top: 96px;
   }
+
+  .panel.history {
+    padding-top: 480px;
+  }
 }
 
 h2 {
@@ -192,7 +196,7 @@ h2 {
 }
 
 .panel.history {
-  padding-top: 220px;
+  padding-top: 340px;
 }
 
 .history-add-workout {
