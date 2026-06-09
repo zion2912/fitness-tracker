@@ -105,10 +105,6 @@
   .history-add-workout {
     top: 96px;
   }
-
-  .panel.history {
-    padding-top: 1000px;
-  }
 }
 
 h2 {
@@ -196,16 +192,14 @@ h2 {
 }
 
 .panel.history {
-  padding-top: 340px;
+  padding-top: 0;
 }
 
 .history-add-workout {
-  position: fixed;
-  top: 88px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: sticky;
+  top: 96px;
   z-index: 20;
-  margin-bottom: 22px;
+  margin: 16px auto 22px;
   padding-bottom: 14px;
   background: #ffffff;
   width: min(100%, 1000px);
