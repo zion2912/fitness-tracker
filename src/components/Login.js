@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../config/firebase-config';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -41,7 +42,7 @@ export default function Login() {
       return;
     }
     try {
-      await sendPasswordResetEmail(email);
+      await sendPasswordResetEmail(auth, email);
       addToast('Password reset email sent!', 'success');
     } catch (err) {
       addToast(err.message || 'Failed to send reset email', 'error');
