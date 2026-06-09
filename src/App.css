@@ -23,10 +23,6 @@
   gap: 8px;
   padding: 0;
   background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid #e2e8f0;
-  border-radius: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  height: 64px;
   position: fixed;
   top: 0;
   left: 0;       /* anchor to the left edge */
@@ -192,14 +188,15 @@ h2 {
 }
 
 .panel.history {
-  padding-top: 0;
+  padding-top: 340px;
 }
 
 .history-add-workout {
-  position: sticky;
-  top: 96px;
+  position: fixed;
+  top: 88px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 20;
-  margin: 16px auto 22px;
   padding-bottom: 14px;
   background: #ffffff;
   width: min(100%, 1000px);
