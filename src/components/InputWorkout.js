@@ -7,7 +7,15 @@ import { useToast } from '../contexts/ToastContext';
 export default function InputWorkout({ inline = false }) {
   const { user } = useAuth();
   const { addToast } = useToast();
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(() => {
+    const now = new Date();
+    // Barbados is UTC-4
+    const barbadosOffset = -4 * 60; // -240 minutes
+    const localOffset = now.getTimezoneOffset(); // in minutes
+    const offsetDiff = localOffset - barbadosOffset;
+    const barbadosDate = new Date(now.getTime() - offsetDiff * 60 * 1000);
+    return barbadosDate.toISOString().slice(0, 10);
+  });
   const [exercise, setExercise] = useState('');
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState('');
