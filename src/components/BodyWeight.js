@@ -34,7 +34,7 @@ export default function BodyWeight() {
     }
     try {
       await addDoc(collection(db, 'weights'), {
-        date,
+        date: Timestamp.fromDate(new Date(date)),
         weight: Number(weight),
         userId: user.uid,
         createdAt: serverTimestamp()
