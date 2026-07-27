@@ -26,6 +26,7 @@ export default function BodyWeight() {
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ date: '', weight: '' });
+  const [showAllWeights, setShowAllWeights] = useState(false);
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
     d.setMonth(d.getMonth() - 3);
@@ -137,6 +138,9 @@ export default function BodyWeight() {
     fetchData();
   }, [fetchData]);
 
+  const weightEntries = [...data].reverse();
+  const visibleWeightEntries = showAllWeights ? weightEntries : weightEntries.slice(0, 5);
+
   return (
     <section className="panel">
       <h2>Body Weight</h2>
@@ -183,8 +187,9 @@ export default function BodyWeight() {
 
         <div style={{ marginTop: 16, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto', textAlign: 'left' }}>
           {data.length > 0 ? (
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {[...data].reverse().map(entry => {
+            <>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {visibleWeightEntries.map(entry => {
                 const isEditing = editingId === entry.id;
                 return (
                   <li key={entry.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderBottom: '1px solid #e2e8f0' }}>
@@ -217,8 +222,16 @@ export default function BodyWeight() {
                     )}
                   </li>
                 );
-              })}
-            </ul>
+                })}
+              </ul>
+              {data.length > 5 && (
+                <div style={{ marginTop: 12, textAlign: 'center' }}>
+                  <button className="btn" type="button" onClick={() => setShowAllWeights(prev => !prev)}>
+                    {showAllWeights ? 'Show less' : 'Show more'}
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <p style={{ marginTop: 16 }}>No weight data in the selected range.</p>
           )}
