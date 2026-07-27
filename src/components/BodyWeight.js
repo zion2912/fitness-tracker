@@ -80,7 +80,6 @@ export default function BodyWeight() {
       const chart = Object.keys(grouped)
         .sort()
         .map(d => ({ id: grouped[d].id, date: d, weight: grouped[d].weight }));
-      const listData = [...chart].reverse();
       setData(chart);
     } catch (err) {
       console.error('Error fetching weights:', err);
