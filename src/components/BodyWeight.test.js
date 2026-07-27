@@ -72,4 +72,22 @@ describe('BodyWeight', () => {
 
     await waitFor(() => expect(mockUpdateDoc).toHaveBeenCalled());
   });
+
+  it('shows a show more button for long weight histories', async () => {
+    const today = new Date();
+    const docs = Array.from({ length: 6 }, (_, index) => ({
+      id: `weight-${index}`,
+      data: () => ({
+        date: { toDate: () => new Date(today.getFullYear(), today.getMonth(), today.getDate() - index) },
+        weight: 170 + index,
+        userId: 'user-1',
+        createdAt: { toDate: () => new Date(today.getFullYear(), today.getMonth(), today.getDate() - index) }
+      })
+    }));
+
+    mockGetDocs.mockResolvedValue({ docs });
+    render(<BodyWeight />);
+
+    expect(await screen.findByRole('button', { name: /show more/i })).toBeInTheDocument();
+  });
 });

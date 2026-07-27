@@ -17,6 +17,7 @@ export default function WorkoutList() {
   const { addToast } = useToast();
   const [firestoreWorkouts, setFirestoreWorkouts] = useState([]);
   const [openDates, setOpenDates] = useState(() => new Set());
+  const [showAllDates, setShowAllDates] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [dayTitles, setDayTitles] = useState({});
@@ -57,6 +58,7 @@ export default function WorkoutList() {
 
   const grouped = groupByDate(allWorkouts);
   const dates = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
+  const visibleDates = showAllDates ? dates : dates.slice(0, 5);
 
   function toggleDate(date) {
     setOpenDates(prev => {
@@ -167,7 +169,7 @@ export default function WorkoutList() {
       <div className="history-add-workout">
         <InputWorkout inline />
       </div>
-      {dates.map(date => {
+      {visibleDates.map(date => {
         const isOpen = openDates.has(date);
         const hasTitle = !!dayTitles[date];
         const isEditingTitle = editingDayDate === date;
@@ -320,6 +322,13 @@ export default function WorkoutList() {
           </div>
         );
       })}
+      {dates.length > 5 && (
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <button className="btn" type="button" onClick={() => setShowAllDates(prev => !prev)}>
+            {showAllDates ? 'Show less' : 'Show more'}
+          </button>
+        </div>
+      )}
     </section>
   );
 }
