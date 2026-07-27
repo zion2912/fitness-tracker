@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, Timestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -24,6 +24,8 @@ export default function BodyWeight() {
   const [date, setDate] = useState(() => localDateString(new Date()));
   const [weight, setWeight] = useState('');
   const [data, setData] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({ date: '', weight: '' });
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
     d.setMonth(d.getMonth() - 3);
@@ -58,7 +60,7 @@ export default function BodyWeight() {
     try {
       const q = query(collection(db, 'weights'), where('userId', '==', user.uid));
       const snap = await getDocs(q);
-      const items = snap.docs.map(d => d.data());
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const grouped = {};
       const lower = startDate;
       const upper = endDate;
@@ -77,13 +79,59 @@ export default function BodyWeight() {
 
       const chart = Object.keys(grouped)
         .sort()
-        .map(d => ({ date: d, weight: grouped[d].weight }));
+        .map(d => ({ id: grouped[d].id, date: d, weight: grouped[d].weight }));
       setData(chart);
     } catch (err) {
       console.error('Error fetching weights:', err);
       setData([]);
     }
   }, [user, startDate, endDate]);
+
+  function startEdit(entry) {
+    setEditingId(entry.id);
+    setEditForm({
+      date: entry.date || '',
+      weight: entry.weight ?? ''
+    });
+  }
+
+  async function saveEdit(entryId) {
+    const weightValue = Number(editForm.weight);
+    if (!editForm.date || !weightValue || Number.isNaN(weightValue) || weightValue <= 0) {
+      addToast('Enter a valid date and weight', 'error');
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, 'weights', entryId), {
+        date: Timestamp.fromDate(localMidnightDate(editForm.date)),
+        weight: weightValue
+      });
+      setEditingId(null);
+      setEditForm({ date: '', weight: '' });
+      addToast('Weight updated', 'success');
+      fetchData();
+    } catch (err) {
+      console.error('Error updating weight:', err);
+      addToast('Failed to update weight', 'error');
+    }
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditForm({ date: '', weight: '' });
+  }
+
+  async function handleDelete(entryId) {
+    try {
+      await deleteDoc(doc(db, 'weights', entryId));
+      addToast('Weight entry deleted', 'success');
+      fetchData();
+    } catch (err) {
+      console.error('Error deleting weight:', err);
+      addToast('Failed to delete weight', 'error');
+    }
+  }
 
   useEffect(() => {
     fetchData();
@@ -133,9 +181,48 @@ export default function BodyWeight() {
           </ResponsiveContainer>
         </div>
 
-        {data.length === 0 && (
-          <p style={{ marginTop: 16 }}>No weight data in the selected range.</p>
-        )}
+        <div style={{ marginTop: 16, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto', textAlign: 'left' }}>
+          {data.length > 0 ? (
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {data.map(entry => {
+                const isEditing = editingId === entry.id;
+                return (
+                  <li key={entry.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderBottom: '1px solid #e2e8f0' }}>
+                    {isEditing ? (
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flex: 1 }}>
+                        <label style={{ display: 'flex', flexDirection: 'column', fontSize: 13 }}>
+                          Date
+                          <input type="date" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} />
+                        </label>
+                        <label style={{ display: 'flex', flexDirection: 'column', fontSize: 13 }}>
+                          Weight
+                          <input type="number" min="0" step="0.1" value={editForm.weight} onChange={e => setEditForm({ ...editForm, weight: e.target.value })} aria-label="Weight" />
+                        </label>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+                          <button className="btn" type="button" onClick={() => saveEdit(entry.id)}>Update</button>
+                          <button className="btn" type="button" onClick={cancelEdit} style={{ background: '#6b7280' }}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{entry.date}</div>
+                          <div style={{ color: '#64748b' }}>{entry.weight} lbs</div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button className="btn" type="button" onClick={() => startEdit(entry)} aria-label="Edit weight" style={{ padding: '6px 10px' }}>Edit</button>
+                          <button className="btn" type="button" onClick={() => handleDelete(entry.id)} style={{ padding: '6px 10px', background: '#ef4444' }}>Delete</button>
+                        </div>
+                      </>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p style={{ marginTop: 16 }}>No weight data in the selected range.</p>
+          )}
+        </div>
       </div>
     </section>
   );
