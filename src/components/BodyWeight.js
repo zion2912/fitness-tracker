@@ -78,7 +78,7 @@ export default function BodyWeight() {
       });
 
       const chart = Object.keys(grouped)
-        .sort()
+        .sort((a, b) => b.localeCompare(a))
         .map(d => ({ id: grouped[d].id, date: d, weight: grouped[d].weight }));
       setData(chart);
     } catch (err) {
