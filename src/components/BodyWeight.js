@@ -78,7 +78,7 @@ export default function BodyWeight() {
       });
 
       const chart = Object.keys(grouped)
-        .sort((a, b) => b.localeCompare(a))
+        .sort()
         .map(d => ({ id: grouped[d].id, date: d, weight: grouped[d].weight }));
       setData(chart);
     } catch (err) {
@@ -184,7 +184,7 @@ export default function BodyWeight() {
         <div style={{ marginTop: 16, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto', textAlign: 'left' }}>
           {data.length > 0 ? (
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {data.map(entry => {
+              {[...data].reverse().map(entry => {
                 const isEditing = editingId === entry.id;
                 return (
                   <li key={entry.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderBottom: '1px solid #e2e8f0' }}>
